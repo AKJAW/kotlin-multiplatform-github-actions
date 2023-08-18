@@ -26,7 +26,63 @@ jobs:
         with:
           arguments: clean testDebug -p androidApp/
 
-  KMP-JVM:
+  Desktop:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean testDebug -p desktopApp/
+
+  iOS:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Compile ios
+        with:
+          arguments: :shared:compileKotlinIosX64
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Compile ios
+        with:
+          arguments: :shared:generateDummyFramework
+
+      - name: Set up cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: latest
+
+      - name: Install Dependencies
+        run: |
+          cd iosApp
+          pod install --verbose
+
+      - run: xcodebuild test -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' build -verbose
+
+  KMP-Android:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: macos-12
 
@@ -41,8 +97,26 @@ jobs:
       - uses: burrunan/gradle-cache-action@v1
         name: Test
         with:
-          arguments: clean testDebug -p shared/
+          arguments: clean testDebugUnitTest -p shared/
 
+  KMP-Desktop:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean desktopTest -p shared/
+
+  #TODO this probably won't work on GHA
   KMP-iOS:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: macos-12
@@ -58,4 +132,4 @@ jobs:
       - uses: burrunan/gradle-cache-action@v1
         name: Test
         with:
-          arguments: clean allTests -p shared/
+          arguments: clean iosSimulatorArm64Test -p shared/

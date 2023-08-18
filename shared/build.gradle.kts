@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -77,7 +79,7 @@ kotlin {
             iosArm64Test.dependsOn(this)
             iosSimulatorArm64Test.dependsOn(this)
         }
-        targets.withType(org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests::class.java) {
+        targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
             testRuns["test"].deviceId = "iPhone 14"
         }
         val desktopMain by getting {
