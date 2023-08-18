@@ -1,0 +1,61 @@
+name: Tests
+
+on:
+  workflow_call:
+
+jobs:
+  Android:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean testDebug -p androidApp/
+
+  KMP-JVM:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean testDebug -p shared/
+
+  KMP-iOS:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - uses: burrunan/gradle-cache-action@v1
+        name: Test
+        with:
+          arguments: clean allTests -p shared/
