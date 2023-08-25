@@ -16,10 +16,10 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - uses: burrunan/gradle-cache-action@v1
-        name: Test
-        with:
-          arguments: clean testDebug -p androidApp/
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - run: ./gradlew clean testDebug -p androidApp/
 
   Desktop:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
@@ -33,10 +33,10 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - uses: burrunan/gradle-cache-action@v1
-        name: Test
-        with:
-          arguments: clean jvmTest -p desktopApp/
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - run: ./gradlew clean jvmTest -p desktopApp/
 
   iOS:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
@@ -50,15 +50,10 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - uses: burrunan/gradle-cache-action@v1
-        name: Compile ios
-        with:
-          arguments: :shared:compileKotlinIosX64
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - uses: burrunan/gradle-cache-action@v1
-        name: Compile ios
-        with:
-          arguments: :shared:generateDummyFramework
+      - run: ./gradlew :shared:generateDummyFramework
 
       - name: Set up cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
@@ -90,10 +85,10 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - uses: burrunan/gradle-cache-action@v1
-        name: Test
-        with:
-          arguments: clean testDebugUnitTest -p shared/
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - run: ./gradlew clean testDebugUnitTest -p shared/
 
   KMP-Desktop:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
@@ -107,10 +102,10 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
-      - uses: burrunan/gradle-cache-action@v1
-        name: Test
-        with:
-          arguments: clean desktopTest -p shared/
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - run: ./gradlew clean desktopTest -p shared/
 
   KMP-iOS:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
@@ -124,6 +119,7 @@ jobs:
           distribution: "adopt"
           java-version: "11"
 
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
-      - name: Test
-        run: if [[ $(uname -m) == 'arm64' ]]; then ./gradlew clean iosSimulatorArm64Test -p shared/; else ./gradlew clean iosX64Test -p shared/; fi
+      - run: if [[ $(uname -m) == 'arm64' ]]; then ./gradlew clean iosSimulatorArm64Test -p shared/; else ./gradlew clean iosX64Test -p shared/; fi
