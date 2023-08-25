@@ -72,6 +72,12 @@ jobs:
 
       - run: xcodebuild test -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' build -verbose
 
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          path: "/Users/runner/Library/Developer/Xcode/DerivedData/*"
+
   KMP-Android:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: macos-12
