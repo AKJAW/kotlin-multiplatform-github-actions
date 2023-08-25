@@ -36,7 +36,7 @@ jobs:
       - uses: burrunan/gradle-cache-action@v1
         name: Test
         with:
-          arguments: clean testDebug -p desktopApp/
+          arguments: clean jvmTest -p desktopApp/
 
   iOS:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
