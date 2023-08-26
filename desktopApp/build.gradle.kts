@@ -12,6 +12,9 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":shared"))
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.13.2")
+                implementation("io.kotest:kotest-assertions-core:5.6.2")
             }
         }
     }

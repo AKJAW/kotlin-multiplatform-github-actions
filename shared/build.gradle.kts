@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithSimulatorTests
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -37,11 +39,26 @@ kotlin {
                 implementation(compose.components.resources)
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlin:kotlin-test-common:1.9.0")
+                implementation("org.jetbrains.kotlin:kotlin-test-annotations-common:1.9.0")
+                implementation("io.kotest:kotest-assertions-core:5.6.2")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
+                implementation("app.cash.turbine:turbine:1.0.0")
+            }
+        }
         val androidMain by getting {
             dependencies {
                 api("androidx.activity:activity-compose:1.6.1")
                 api("androidx.appcompat:appcompat:1.6.1")
                 api("androidx.core:core-ktx:1.9.0")
+            }
+        }
+        val androidUnitTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.13.2")
             }
         }
         val iosX64Main by getting
@@ -53,9 +70,27 @@ kotlin {
             iosArm64Main.dependsOn(this)
             iosSimulatorArm64Main.dependsOn(this)
         }
+        val iosX64Test by getting
+        val iosArm64Test by getting
+        val iosSimulatorArm64Test by getting
+        val iosTest by creating {
+            dependsOn(commonTest)
+            iosX64Test.dependsOn(this)
+            iosArm64Test.dependsOn(this)
+            iosSimulatorArm64Test.dependsOn(this)
+        }
+        targets.withType(KotlinNativeTargetWithSimulatorTests::class.java) {
+            testRuns["test"].deviceId = "iPhone 14"
+        }
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
+            }
+        }
+        val desktopTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.13.2")
             }
         }
     }
