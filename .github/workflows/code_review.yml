@@ -15,11 +15,41 @@ on:
       - main
 
 jobs:
+  SetUp:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          hasKmpLabel=${{ contains(github.event.pull_request.labels.*.name, 'KMP') }}
+          hasAndroidLabel=${{ contains(github.event.pull_request.labels.*.name, 'Android') }}
+          hasIosLabel=${{ contains(github.event.pull_request.labels.*.name, 'iOS') }}
+          hasDesktopLabel=${{ contains(github.event.pull_request.labels.*.name, 'Desktop') }}
+          
+          if [[ $hasKmpLabel ]]; then
+            echo "shouldRunKmp=true" >> "$GITHUB_OUTPUT"
+            echo "shouldRunAndroid=true" >> "$GITHUB_OUTPUT"
+            echo "shouldRunIos=true" >> "$GITHUB_OUTPUT"
+            echo "hasDesktopLabel=true" >> "$GITHUB_OUTPUT"
+          elif [[ $hasAndroidLabel ]]; then
+            echo "shouldRunAndroid=true" >> "$GITHUB_OUTPUT"
+          elif [[ $hasIosLabel ]]; then
+            echo "shouldRunIos=true" >> "$GITHUB_OUTPUT"
+          elif [[ $hasDesktopLabel ]]; then
+            echo "shouldRunDesktop=true" >> "$GITHUB_OUTPUT"
+          fi
+          
+          if [ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) ]); then
+            exit 0
+          else
+            exit 1
+          fi
+
   Build:
+    needs: SetUp
     uses: ./.github/workflows/build.yml
     secrets: inherit
 
   UnitTests:
+    needs: SetUp
     uses: ./.github/workflows/test.yml
     secrets: inherit
 
