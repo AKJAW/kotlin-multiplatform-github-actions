@@ -65,7 +65,7 @@ jobs:
           cd iosApp
           pod install --verbose
 
-      - run: xcodebuild test -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' build -verbose
+      - run: xcodebuild build test -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' -verbose
 
       - name: Upload logs
         if: always()
