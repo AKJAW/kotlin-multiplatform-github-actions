@@ -18,48 +18,45 @@ jobs:
   SetUp:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          hasKmpLabel=${{ contains(github.event.pull_request.labels.*.name, 'KMP') }}
-          hasAndroidLabel=${{ contains(github.event.pull_request.labels.*.name, 'Android') }}
-          hasIosLabel=${{ contains(github.event.pull_request.labels.*.name, 'iOS') }}
-          hasDesktopLabel=${{ contains(github.event.pull_request.labels.*.name, 'Desktop') }}
+      - id: setVariables
+        name: Set variables
+        run: |
+          echo "shouldRunKmp=${{ contains(github.event.pull_request.labels.*.name, 'KMP') }}" >> "$GITHUB_OUTPUT"
+          echo "shouldRunAndroid=${{ contains(github.event.pull_request.labels.*.name, 'Android') }}" >> "$GITHUB_OUTPUT"
+          echo "shouldRunIos=${{ contains(github.event.pull_request.labels.*.name, 'iOS') }}" >> "$GITHUB_OUTPUT"
+          echo "shouldRunDesktop=${{ contains(github.event.pull_request.labels.*.name, 'Desktop') }}" >> "$GITHUB_OUTPUT"
           
-          if [ $hasKmpLabel ]; then
-            echo "shouldRunKmp=true" >> "$GITHUB_OUTPUT"
-            echo "shouldRunAndroid=true" >> "$GITHUB_OUTPUT"
-            echo "shouldRunIos=true" >> "$GITHUB_OUTPUT"
-            echo "hasDesktopLabel=true" >> "$GITHUB_OUTPUT"
-          elif [ $hasAndroidLabel ]; then
-            echo "shouldRunAndroid=true" >> "$GITHUB_OUTPUT"
-          elif [ $hasIosLabel ]; then
-            echo "shouldRunIos=true" >> "$GITHUB_OUTPUT"
-          elif [ $hasDesktopLabel ]; then
-            echo "shouldRunDesktop=true" >> "$GITHUB_OUTPUT"
-          fi
-          
-          if [ ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }} ]; then
+          if [ ${{ github.event_name }} == workflow_dispatch ]  || [ ${{ github.event_name }} == push ] || ([ ${{ github.event_name }} == pull_request ] && [ ${{ github.event.pull_request.draft }} = false ]); then
             exit 0
           else
             exit 1
           fi
+    outputs:
+      shouldRunKmp: ${{ steps.setVariables.outputs.shouldRunKmp }}
+      shouldRunAndroid: ${{ steps.setVariables.outputs.shouldRunAndroid }}
+      shouldRunIos: ${{ steps.setVariables.outputs.shouldRunIos }}
+      shouldRunDesktop: ${{ steps.setVariables.outputs.shouldRunDesktop }}
 
   Build:
     needs: SetUp
     uses: ./.github/workflows/build.yml
-    secrets: inherit
+    with:
+      shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
+      shouldRunAndroid: ${{ needs.SetUp.outputs.shouldRunAndroid }}
+      shouldRunIos: ${{ needs.SetUp.outputs.shouldRunIos }}
+      shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   UnitTests:
     needs: SetUp
     uses: ./.github/workflows/test.yml
-    secrets: inherit
 
   AllowMerge:
     if: always()
     runs-on: ubuntu-latest
-    needs: [ Build, UnitTests ]
+    needs: [ SetUp, Build, UnitTests ]
     steps:
       - run: |
-          if [ ${{ (contains(needs.Build.result, 'failure')) }} = true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} = true ]; then
+          if [ ${{ (contains(needs.SetUp.result, 'failure')) }} = true ] || [ ${{ (contains(needs.Build.result, 'failure')) }} = true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} = true ]; then
             exit 1
           else
             exit 0

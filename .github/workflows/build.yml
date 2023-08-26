@@ -2,10 +2,23 @@ name: Build
 
 on:
   workflow_call:
+    inputs:
+      shouldRunKmp:
+        required: true
+        type: string
+      shouldRunAndroid:
+        required: true
+        type: string
+      shouldRunIos:
+        required: true
+        type: string
+      shouldRunDesktop:
+        required: true
+        type: string
 
 jobs:
   Android:
-    if: ${{ true }}
+    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +35,7 @@ jobs:
       - run: ./gradlew :androidApp:assemble
 
   Desktop:
-    if: ${{ true }}
+    if: ${{  inputs.shouldRunKmp == 'true' || inputs.shouldRunDesktop == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
