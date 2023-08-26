@@ -35,7 +35,7 @@ jobs:
       - run: ./gradlew :androidApp:assemble
 
   Desktop:
-    if: ${{  inputs.shouldRunKmp == 'true' || inputs.shouldRunDesktop == 'true' }}
+    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunDesktop == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -50,32 +50,32 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - run: ./gradlew :desktopApp:assemble
-#
-#  iOS:
-#    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
-#    runs-on: macos-12
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: "adopt"
-#          java-version: "11"
-#
-#      - name: Setup Gradle
-#        uses: gradle/gradle-build-action@v2
-#
-#      - run: ./gradlew :shared:generateDummyFramework
-#
-#      - name: Set up cocoapods
-#        uses: maxim-lobanov/setup-cocoapods@v1
-#        with:
-#          version: latest
-#
-#      - name: Install Dependencies
-#        run: |
-#          cd iosApp
-#          pod install --verbose
-#
-#      - run: xcodebuild build -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' -verbose
+
+  iOS:
+    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunIos == 'true' }}
+    runs-on: macos-12
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - run: ./gradlew :shared:generateDummyFramework
+
+      - name: Set up cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: latest
+
+      - name: Install Dependencies
+        run: |
+          cd iosApp
+          pod install --verbose
+
+      - run: xcodebuild build -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' -verbose

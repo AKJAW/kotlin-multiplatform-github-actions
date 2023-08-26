@@ -26,7 +26,7 @@ jobs:
           echo "shouldRunIos=${{ contains(github.event.pull_request.labels.*.name, 'iOS') }}" >> "$GITHUB_OUTPUT"
           echo "shouldRunDesktop=${{ contains(github.event.pull_request.labels.*.name, 'Desktop') }}" >> "$GITHUB_OUTPUT"
           
-          if [ ${{ github.event_name }} == workflow_dispatch ]  || [ ${{ github.event_name }} == push ] || ([ ${{ github.event_name }} == pull_request ] && [ ${{ github.event.pull_request.draft }} = false ]); then
+          if [ ${{ github.event_name }} == workflow_dispatch ] || [ ${{ github.event_name }} == push ] || ([ ${{ github.event_name }} == pull_request ] && [ ${{ github.event.pull_request.draft }} = false ]); then
             exit 0
           else
             exit 1
@@ -49,6 +49,11 @@ jobs:
   UnitTests:
     needs: SetUp
     uses: ./.github/workflows/test.yml
+    with:
+      shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
+      shouldRunAndroid: ${{ needs.SetUp.outputs.shouldRunAndroid }}
+      shouldRunIos: ${{ needs.SetUp.outputs.shouldRunIos }}
+      shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   AllowMerge:
     if: always()
