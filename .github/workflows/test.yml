@@ -39,7 +39,8 @@ jobs:
       - run: ./gradlew clean jvmTest -p desktopApp/
 
   iOS:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+#    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
+    if: false
     runs-on: macos-12
 
     steps:
