@@ -52,17 +52,8 @@ jobs:
       - name: Job set up
         uses: ./.github/actions/job-set-up
 
-      - run: ./gradlew :shared:generateDummyFramework
-
-      - name: Set up cocoapods
-        uses: maxim-lobanov/setup-cocoapods@v1
-        with:
-          version: latest
-
-      - name: Install Dependencies
-        run: |
-          cd iosApp
-          pod install --verbose
+      - name: iOS set up
+        uses: ./.github/actions/ios-set-up
 
       - run: xcodebuild build test -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' -verbose
 

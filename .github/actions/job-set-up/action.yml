@@ -1,5 +1,5 @@
 name: Job set up
-description: Sets up the Repository, Java and Gradle
+description: Sets up the Java and Gradle
 runs:
   using: "composite"
   steps:
