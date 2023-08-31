@@ -2,23 +2,10 @@ name: Build
 
 on:
   workflow_call:
-    inputs:
-      shouldRunKmp:
-        required: true
-        type: string
-      shouldRunAndroid:
-        required: true
-        type: string
-      shouldRunIos:
-        required: true
-        type: string
-      shouldRunDesktop:
-        required: true
-        type: string
 
 jobs:
   Android:
-    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +22,7 @@ jobs:
       - run: ./gradlew :androidApp:assemble
 
   Desktop:
-    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunDesktop == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +39,7 @@ jobs:
       - run: ./gradlew :desktopApp:assemble
 
   iOS:
-    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunIos == 'true' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.draft == false) }}
     runs-on: macos-12
 
     steps:
