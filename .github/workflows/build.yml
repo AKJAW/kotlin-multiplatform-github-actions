@@ -24,8 +24,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Job set up
-        uses: ./.github/actions/job-set-up
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
       - run: ./gradlew :androidApp:assemble
 
@@ -36,8 +41,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Job set up
-        uses: ./.github/actions/job-set-up
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
 
       - run: ./gradlew :desktopApp:assemble
 
@@ -48,10 +58,24 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Job set up
-        uses: ./.github/actions/job-set-up
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "adopt"
+          java-version: "11"
 
-      - name: iOS set up
-        uses: ./.github/actions/ios-set-up
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - run: ./gradlew :shared:generateDummyFramework
+
+      - name: Set up cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
+        with:
+          version: latest
+
+      - name: Install Dependencies
+        run: |
+          cd iosApp
+          pod install --verbose
 
       - run: xcodebuild build -workspace iosApp/iosApp.xcworkspace -configuration Debug -scheme iosApp -sdk iphoneos -destination name='iPhone 14' -verbose
