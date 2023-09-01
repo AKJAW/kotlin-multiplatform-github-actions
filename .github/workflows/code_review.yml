@@ -27,7 +27,9 @@ jobs:
     needs: [ Build, UnitTests ]
     steps:
       - run: |
-          if [ ${{ (contains(needs.Build.result, 'failure')) }} = true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} = true ]; then
+          if [ ${{ github.event_name }} == pull_request ] && [ ${{ join(github.event.pull_request.labels.*.name) == '' }} == true ]; then
+            exit 1
+          elif [ ${{ (contains(needs.SetUp.result, 'failure')) }} == true ] || [ ${{ (contains(needs.Build.result, 'failure')) }} == true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} == true ]; then
             exit 1
           else
             exit 0
