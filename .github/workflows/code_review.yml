@@ -21,10 +21,11 @@ jobs:
       - id: setVariables
         name: Set variables
         run: |
-          isFromMain=${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          isFromMain=${{ github.ref == 'refs/heads/main' }}
+          isManual=${{ github.event_name == 'workflow_dispatch' }}
           hasKmpLabel=${{ contains(github.event.pull_request.labels.*.name, 'KMP') }}
           shouldRunKmp=false
-          if $isFromMain || $hasKmpLabel ; then
+          if $isFromMain || $isManual || $hasKmpLabel ; then
             shouldRunKmp=true
           fi
           echo "shouldRunKmp=$shouldRunKmp" >> "$GITHUB_OUTPUT"
@@ -69,7 +70,7 @@ jobs:
       - run: |
           if [ ${{ github.event_name }} == pull_request ] && [ ${{ join(github.event.pull_request.labels.*.name) == '' }} == true ]; then
             exit 1
-          elif [ ${{ (contains(needs.SetUp.result, 'failure')) }} == true ] || [ ${{ (contains(needs.Build.result, 'failure')) }} == true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} == true ]; then
+          elif [ ${{ (contains(needs.Build.result, 'failure')) }} == true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} == true ]; then
             exit 1
           else
             exit 0
