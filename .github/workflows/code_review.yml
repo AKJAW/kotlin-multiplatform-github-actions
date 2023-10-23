@@ -52,8 +52,16 @@ jobs:
       shouldRunAndroid: ${{ needs.SetUp.outputs.shouldRunAndroid }}
       shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
+  Ktlint:
+    needs: SetUp
+    uses: ./.github/workflows/ktlint.yml
+    with:
+      shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
+      shouldRunAndroid: ${{ needs.SetUp.outputs.shouldRunAndroid }}
+      shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
+
   Build:
-    needs: [ SetUp, Konsist ]
+    needs: [ Konsist, Ktlint ]
     uses: ./.github/workflows/build.yml
     with:
       shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
@@ -62,7 +70,7 @@ jobs:
       shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   UnitTests:
-    needs: [ SetUp, Konsist ]
+    needs: [ Konsist, Ktlint ]
     uses: ./.github/workflows/test.yml
     with:
       shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
