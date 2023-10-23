@@ -3,12 +3,14 @@ rootProject.name = "MyApplication"
 include(":androidApp")
 include(":shared")
 include(":desktopApp")
+include(":konsist")
 
 pluginManagement {
     repositories {
         gradlePluginPortal()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         google()
+        mavenCentral()
     }
 
     plugins {
@@ -24,6 +26,7 @@ pluginManagement {
         id("com.android.library").version(agpVersion)
 
         id("org.jetbrains.compose").version(composeVersion)
+        id("org.jlleitschuh.gradle.ktlint").version("11.6.1")
     }
 }
 

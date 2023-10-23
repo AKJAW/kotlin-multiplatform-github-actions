@@ -1,0 +1,27 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      shouldRunKmp:
+        required: true
+        type: string
+      shouldRunAndroid:
+        required: true
+        type: string
+      shouldRunDesktop:
+        required: true
+        type: string
+
+jobs:
+  Konsist:
+    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Job set up
+        uses: ./.github/actions/job-set-up
+
+      - run: ./gradlew :konsist:testDebugUnitTest
