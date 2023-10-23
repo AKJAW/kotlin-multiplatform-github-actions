@@ -14,7 +14,7 @@ on:
         type: string
 
 jobs:
-  Konsist:
+  Ktlint:
     if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}
     runs-on: ubuntu-latest
 
