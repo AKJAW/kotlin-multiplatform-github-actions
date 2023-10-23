@@ -1,1 +1,1 @@
-expect fun calculate() : Int
+expect fun calculate(): Int
