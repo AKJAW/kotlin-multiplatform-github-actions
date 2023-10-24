@@ -2,16 +2,6 @@ name: Build
 
 on:
   workflow_call:
-    inputs:
-      shouldRunKmp:
-        required: true
-        type: string
-      shouldRunAndroid:
-        required: true
-        type: string
-      shouldRunDesktop:
-        required: true
-        type: string
 
 jobs:
   Ktlint:
@@ -23,9 +13,4 @@ jobs:
       - name: Job set up
         uses: ./.github/actions/job-set-up
 
-      - run:  |
-          if ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}; then
-            ./gradlew ktlintCheck
-          else 
-            exit 0
-          fi
+      - run: ./gradlew ktlintCheck
