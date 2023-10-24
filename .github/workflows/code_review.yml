@@ -61,7 +61,7 @@ jobs:
       shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   Build:
-    needs: [ Konsist, Ktlint ]
+    needs: [ SetUp, Konsist, Ktlint ]
     uses: ./.github/workflows/build.yml
     with:
       shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
@@ -70,7 +70,7 @@ jobs:
       shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   UnitTests:
-    needs: [ Konsist, Ktlint ]
+    needs: [ SetUp, Konsist, Ktlint ]
     uses: ./.github/workflows/test.yml
     with:
       shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
@@ -86,7 +86,7 @@ jobs:
       - run: |
           if [ ${{ github.event_name }} == pull_request ] && [ ${{ join(github.event.pull_request.labels.*.name) == '' }} == true ]; then
             exit 1
-          elif [ ${{ (contains(needs.Konsist.result, 'success')) }} == false ] || [ ${{ (contains(needs.Ktlint.result, 'success')) }} == false ] || [ ${{ (contains(needs.Build.result, 'failure')) }} == true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} == true ]; then
+          elif [ ${{ (contains(needs.Konsist.result, 'failure')) }} == true ] || [ ${{ (contains(needs.Ktlint.result, 'failure')) }} == true ] || [ ${{ (contains(needs.Build.result, 'failure')) }} == true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} == true ]; then
             exit 1
           else
             exit 0

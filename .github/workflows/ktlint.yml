@@ -15,7 +15,6 @@ on:
 
 jobs:
   Ktlint:
-    if: ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -24,4 +23,9 @@ jobs:
       - name: Job set up
         uses: ./.github/actions/job-set-up
 
-      - run: ./gradlew ktlintCheck
+      - run:  |
+          if ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}; then
+            ./gradlew ktlintCheck
+          else 
+            exit 0
+          fi
