@@ -24,7 +24,7 @@ jobs:
         uses: ./.github/actions/job-set-up
 
       - run: |
-          if ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' }}; then
+          if ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}; then
             ./gradlew :konsist:testDebugUnitTest
           else 
             exit 0
