@@ -47,10 +47,18 @@ jobs:
   Konsist:
     needs: SetUp
     uses: ./.github/workflows/konsist.yml
+    with:
+      shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
+      shouldRunAndroid: ${{ needs.SetUp.outputs.shouldRunAndroid }}
+      shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   Ktlint:
     needs: SetUp
     uses: ./.github/workflows/ktlint.yml
+    with:
+      shouldRunKmp: ${{ needs.SetUp.outputs.shouldRunKmp }}
+      shouldRunAndroid: ${{ needs.SetUp.outputs.shouldRunAndroid }}
+      shouldRunDesktop: ${{ needs.SetUp.outputs.shouldRunDesktop }}
 
   Build:
     needs: [ SetUp, Konsist, Ktlint ]
