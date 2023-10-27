@@ -1,0 +1,16 @@
+name: Konsist
+
+on:
+  workflow_call:
+
+jobs:
+  Konsist:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Job set up
+        uses: ./.github/actions/job-set-up
+
+      - run: ./gradlew :konsist:testDebugUnitTest
