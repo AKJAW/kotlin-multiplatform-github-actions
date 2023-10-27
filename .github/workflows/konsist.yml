@@ -2,6 +2,16 @@ name: Konsist
 
 on:
   workflow_call:
+    inputs:
+      shouldRunKmp:
+        required: true
+        type: string
+      shouldRunAndroid:
+        required: true
+        type: string
+      shouldRunDesktop:
+        required: true
+        type: string
 
 jobs:
   Konsist:
@@ -13,4 +23,9 @@ jobs:
       - name: Job set up
         uses: ./.github/actions/job-set-up
 
-      - run: ./gradlew :konsist:testDebugUnitTest
+      - run: |
+          if ${{ inputs.shouldRunKmp == 'true' || inputs.shouldRunAndroid == 'true' || inputs.shouldRunDesktop == 'true' }}; then
+            ./gradlew :konsist:testDebugUnitTest
+          else 
+            exit 0
+          fi
