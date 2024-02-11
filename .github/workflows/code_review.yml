@@ -9,10 +9,12 @@ on:
   push:
     branches:
       - main
+      - automatic-labels # Added just for testing
   pull_request:
     types: [opened, ready_for_review, synchronize]
     branches:
       - main
+      - automatic-labels # Added just for testing
 
 jobs:
   SetUp:
