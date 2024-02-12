@@ -10,7 +10,7 @@ on:
     branches:
       - main
       - automatic-labels # Added just for testing
-  pull_request:
+  pull_request_target: # Can't be pull_request because this repository is a Fork
     types: [opened, ready_for_review, synchronize]
     branches:
       - main
