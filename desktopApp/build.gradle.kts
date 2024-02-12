@@ -19,7 +19,7 @@ kotlin {
         }
     }
 }
-
+// a desktop change
 compose.desktop {
     application {
         mainClass = "MainKt"

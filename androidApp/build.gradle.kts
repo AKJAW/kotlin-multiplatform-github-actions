@@ -17,7 +17,7 @@ kotlin {
         }
     }
 }
-
+// an Android change
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
     namespace = "com.myapplication"
