@@ -9,29 +9,37 @@ on:
   push:
     branches:
       - main
+      - automatic-labels # Added just for testing
   pull_request:
     types: [opened, ready_for_review, synchronize]
     branches:
       - main
+      - automatic-labels # Added just for testing
 
 jobs:
   SetUp:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
+      - id: labeler
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'Ignore') }}
+        uses: actions/labeler@v5
       - id: setVariables
         name: Set variables
         run: |
           isFromMain=${{ github.ref == 'refs/heads/main' }}
           isManual=${{ github.event_name == 'workflow_dispatch' }}
-          hasKmpLabel=${{ contains(github.event.pull_request.labels.*.name, 'KMP') }}
+          hasKmpLabel=${{ contains(steps.labeler.outputs.all-labels, 'KMP') }}
           shouldRunKmp=false
           if $isFromMain || $isManual || $hasKmpLabel ; then
             shouldRunKmp=true
           fi
           echo "shouldRunKmp=$shouldRunKmp" >> "$GITHUB_OUTPUT"
-          echo "shouldRunAndroid=${{ contains(github.event.pull_request.labels.*.name, 'Android') }}" >> "$GITHUB_OUTPUT"
-          echo "shouldRunIos=${{ contains(github.event.pull_request.labels.*.name, 'iOS') }}" >> "$GITHUB_OUTPUT"
-          echo "shouldRunDesktop=${{ contains(github.event.pull_request.labels.*.name, 'Desktop') }}" >> "$GITHUB_OUTPUT"
+          echo "shouldRunAndroid=${{ contains(steps.labeler.outputs.all-labels, 'Android') }}" >> "$GITHUB_OUTPUT"
+          echo "shouldRunIos=${{ contains(steps.labeler.outputs.all-labels, 'iOS') }}" >> "$GITHUB_OUTPUT"
+          echo "shouldRunDesktop=${{ contains(steps.labeler.outputs.all-labels, 'Desktop') }}" >> "$GITHUB_OUTPUT"
           
           if [ ${{ github.event_name }} == workflow_dispatch ] || [ ${{ github.event_name }} == push ] || ([ ${{ github.event_name }} == pull_request ] && [ ${{ github.event.pull_request.draft }} == false ]); then
             exit 0
@@ -43,6 +51,7 @@ jobs:
       shouldRunAndroid: ${{ steps.setVariables.outputs.shouldRunAndroid }}
       shouldRunIos: ${{ steps.setVariables.outputs.shouldRunIos }}
       shouldRunDesktop: ${{ steps.setVariables.outputs.shouldRunDesktop }}
+      all-labels: ${{ steps.labeler.outputs.all-labels }}
 
   Build:
     needs: SetUp
@@ -65,10 +74,10 @@ jobs:
   AllowMerge:
     if: always()
     runs-on: ubuntu-latest
-    needs: [ Build, UnitTests ]
+    needs: [ SetUp, Build, UnitTests ]
     steps:
       - run: |
-          if [ ${{ github.event_name }} == pull_request ] && [ ${{ join(github.event.pull_request.labels.*.name) == '' }} == true ]; then
+          if [ ${{ github.event_name }} == pull_request ] && [ ${{ join(github.event.pull_request.labels.*.name) == '' }} == true ] && [ ${{ join(needs.SetUp.outputs.all-labels) == '' }} == true ]; then
             exit 1
           elif [ ${{ (contains(needs.Build.result, 'failure')) }} == true ] || [ ${{ (contains(needs.UnitTests.result, 'failure')) }} == true ]; then
             exit 1
