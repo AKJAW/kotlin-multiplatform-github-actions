@@ -1,0 +1,20 @@
+KMP:
+- changed-files:
+    - any-glob-to-any-file:
+      - shared/**
+      - konsist/**
+
+Android:
+- changed-files:
+    - any-glob-to-any-file:
+      - androidApp/**
+
+iOS:
+- changed-files:
+    - any-glob-to-any-file:
+      - iosApp/**
+
+Desktop:
+- changed-files:
+    - any-glob-to-any-file:
+      - desktopApp/**
